@@ -6,4 +6,4 @@ __pycache__/
 .python-version
 .venv_wsl/
 db_meta.json
-recordings/
+data/
