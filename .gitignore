@@ -7,3 +7,5 @@ __pycache__/
 .venv_wsl/
 db_meta.json
 data/
+db_meta.json
+data/
