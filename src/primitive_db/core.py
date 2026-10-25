@@ -1,8 +1,16 @@
-
+from .decorators import (
+    confirm_action,
+    create_cacher,
+    handle_db_errors,
+    log_time,
+)
 
 SUPPORTED_DATA_TYPES = {'int', 'str', 'bool'}
 
+select_cache = create_cacher()
 
+
+@handle_db_errors
 def create_table(metadata, table_name, columns):
     """Create a table with an automatically generated ID column."""
     if table_name in metadata:
@@ -32,6 +40,8 @@ def create_table(metadata, table_name, columns):
     return metadata
 
 
+@confirm_action("удаление таблицы")
+@handle_db_errors
 def drop_table(metadata, table_name):
     """Delete a table from metadata."""
     if table_name not in metadata:
@@ -42,6 +52,7 @@ def drop_table(metadata, table_name):
     return metadata
 
 
+@handle_db_errors
 def list_tables(metadata):
     """Выводит список существующих таблиц."""
     if not metadata:
@@ -51,7 +62,8 @@ def list_tables(metadata):
         print(f"- {table_name}")
 
 
-
+@log_time
+@handle_db_errors
 def insert(metadata, table_name, values, table_data):
     """Добавляет новую запись в таблицу."""
     if table_name not in metadata:
@@ -92,21 +104,38 @@ def insert(metadata, table_name, values, table_data):
     return table_data
 
 
+@log_time
+@handle_db_errors
 def select(table_data, where_clause=None):
     """Возвращает записи таблицы с учётом условия фильтрации."""
-    if where_clause is None:
-        return table_data
 
-    return [
-        row
-        for row in table_data
-        if all(
-            row.get(column) == value
-            for column, value in where_clause.items()
-        )
-    ]
+    cache_key = (
+        tuple(
+            tuple(sorted(row.items()))
+            for row in table_data
+        ),
+        tuple(sorted(where_clause.items())) if where_clause else None,
+    )
+
+    return select_cache(
+        cache_key,
+        lambda: (
+            [row.copy() for row in table_data]
+            if where_clause is None
+            else [
+                row.copy()
+                for row in table_data
+                if all(
+                    row.get(column) == value
+                    for column, value in where_clause.items()
+                )
+            ]
+        ),
+    )
 
 
+
+@handle_db_errors
 def update(metadata, table_name, table_data, set_clause, where_clause):
     """Обновляет записи таблицы по заданному условию."""
 
@@ -168,6 +197,9 @@ def update(metadata, table_name, table_data, set_clause, where_clause):
     return table_data
 
 
+
+@confirm_action("удаление записей")
+@handle_db_errors
 def delete(metadata, table_name, table_data, where_clause):
     """Удаляет записи, соответствующие условию."""
 
@@ -207,6 +239,8 @@ def delete(metadata, table_name, table_data, where_clause):
     print(f"Удалено записей: {len(matching_rows)}.")
     return result
 
+
+@handle_db_errors
 def info(metadata, table_name, table_data):
     """Выводит информацию о таблице и количестве записей."""
     if table_name not in metadata:
