@@ -4,6 +4,7 @@ from pathlib import Path
 METADATA_FILE = Path("db_meta.json")
 DATA_DIR = Path("data")
 
+
 def load_metadata(filepath):
     """Load database metadata from a JSON file."""
     try:

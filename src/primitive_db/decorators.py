@@ -20,25 +20,26 @@ def handle_db_errors(func):
     return wrapper
 
 
-
 def confirm_action(action_name):
     """Запрашивает подтверждение перед выполнением действия."""
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            answer = input(
-                f'Вы уверены, что хотите выполнить "{action_name}"? [y/n]: '
-            )
+            answer = input(f'Вы уверены, что хотите выполнить "{action_name}"? [y/n]: ')
             if answer.strip().lower() != "y":
                 print("Операция отменена.")
                 return None
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
 def log_time(func):
     """Измеряет и выводит время выполнения функции."""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.monotonic()
@@ -46,21 +47,20 @@ def log_time(func):
             return func(*args, **kwargs)
         finally:
             elapsed = time.monotonic() - start
-            print(
-                f"Функция {func.__name__} выполнилась "
-                f"за {elapsed:.3f} секунд"
-            )
+            print(f"Функция {func.__name__} выполнилась за {elapsed:.3f} секунд")
+
     return wrapper
 
 
 def create_cacher():
     """Создаёт кеш для сохранения результатов вызовов."""
     cache = {}
+
     def cache_result(key, value_func):
         if key in cache:
             return cache[key]
         result = value_func()
         cache[key] = result
         return result
-    return cache_result
 
+    return cache_result

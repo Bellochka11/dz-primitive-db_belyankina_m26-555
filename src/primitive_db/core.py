@@ -5,7 +5,7 @@ from .decorators import (
     log_time,
 )
 
-SUPPORTED_DATA_TYPES = {'int', 'str', 'bool'}
+SUPPORTED_DATA_TYPES = {"int", "str", "bool"}
 
 select_cache = create_cacher()
 
@@ -30,13 +30,8 @@ def create_table(metadata, table_name, columns):
             return
         new_columns[name] = type_
     metadata[table_name] = new_columns
-    columns_info = ", ".join(
-        f"{name}:{type_}" for name, type_ in new_columns.items()
-    )
-    print(
-        f'Таблица "{table_name}" успешно создана '
-        f"со столбцами: {columns_info}"
-    )
+    columns_info = ", ".join(f"{name}:{type_}" for name, type_ in new_columns.items())
+    print(f'Таблица "{table_name}" успешно создана со столбцами: {columns_info}')
     return metadata
 
 
@@ -46,7 +41,7 @@ def drop_table(metadata, table_name):
     """Delete a table from metadata."""
     if table_name not in metadata:
         print(f'Ошибка: Таблица "{table_name}" не существует.')
-        return 
+        return
     del metadata[table_name]
     print(f'Таблица "{table_name}" успешно удалена.')
     return metadata
@@ -97,10 +92,7 @@ def insert(metadata, table_name, values, table_data):
     new_row = {"ID": new_id, **new_row}
     table_data.append(new_row)
 
-    print(
-        f'Запись с ID={new_id} успешно добавлена '
-        f'в таблицу "{table_name}".'
-    )
+    print(f'Запись с ID={new_id} успешно добавлена в таблицу "{table_name}".')
     return table_data
 
 
@@ -110,10 +102,7 @@ def select(table_data, where_clause=None):
     """Возвращает записи таблицы с учётом условия фильтрации."""
 
     cache_key = (
-        tuple(
-            tuple(sorted(row.items()))
-            for row in table_data
-        ),
+        tuple(tuple(sorted(row.items())) for row in table_data),
         tuple(sorted(where_clause.items())) if where_clause else None,
     )
 
@@ -126,13 +115,11 @@ def select(table_data, where_clause=None):
                 row.copy()
                 for row in table_data
                 if all(
-                    row.get(column) == value
-                    for column, value in where_clause.items()
+                    row.get(column) == value for column, value in where_clause.items()
                 )
             ]
         ),
     )
-
 
 
 @handle_db_errors
@@ -168,23 +155,17 @@ def update(metadata, table_name, table_data, set_clause, where_clause):
     }
 
     if type(set_value) is not valid_types[expected_type]:
-        print(
-            f'Ошибка: столбец "{set_column}" '
-            f'должен иметь тип {expected_type}.'
-        )
+        print(f'Ошибка: столбец "{set_column}" должен иметь тип {expected_type}.')
         return None
 
     if type(where_value) is not valid_types[columns[where_column]]:
         print(
             f'Ошибка: столбец "{where_column}" '
-            f'должен иметь тип {columns[where_column]}.'
+            f"должен иметь тип {columns[where_column]}."
         )
         return None
 
-    matching_rows = [
-        row for row in table_data
-        if row.get(where_column) == where_value
-    ]
+    matching_rows = [row for row in table_data if row.get(where_column) == where_value]
 
     if not matching_rows:
         print("Совпадающих записей не найдено.")
@@ -195,7 +176,6 @@ def update(metadata, table_name, table_data, set_clause, where_clause):
 
     print(f"Обновлено записей: {len(matching_rows)}.")
     return table_data
-
 
 
 @confirm_action("удаление записей")
@@ -217,10 +197,7 @@ def delete(metadata, table_name, table_data, where_clause):
     matching_rows = [
         row
         for row in table_data
-        if all(
-            row.get(column) == value
-            for column, value in where_clause.items()
-        )
+        if all(row.get(column) == value for column, value in where_clause.items())
     ]
 
     if not matching_rows:
@@ -230,10 +207,7 @@ def delete(metadata, table_name, table_data, where_clause):
     result = [
         row
         for row in table_data
-        if not all(
-            row.get(column) == value
-            for column, value in where_clause.items()
-        )
+        if not all(row.get(column) == value for column, value in where_clause.items())
     ]
 
     print(f"Удалено записей: {len(matching_rows)}.")
@@ -249,8 +223,7 @@ def info(metadata, table_name, table_data):
 
     columns = metadata[table_name]
     columns_info = ", ".join(
-        f"{column}:{data_type}"
-        for column, data_type in columns.items()
+        f"{column}:{data_type}" for column, data_type in columns.items()
     )
 
     print(f"Таблица: {table_name}")

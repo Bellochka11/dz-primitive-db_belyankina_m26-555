@@ -29,16 +29,12 @@ from .utils import (
 METADATA = "db_meta.json"
 
 
-
 def print_help():
     """Prints the help message for the current mode."""
 
     print("\n*** Процесс работы с таблицами ***")
     print("Функции:")
-    print(
-        "create_table <имя_таблицы> <столбец1:тип> ... "
-        "- создать таблицу"
-    )
+    print("create_table <имя_таблицы> <столбец1:тип> ... - создать таблицу")
     print("list_tables - показать список всех таблиц")
     print("drop_table <имя_таблицы> - удалить таблицу")
 
@@ -58,10 +54,7 @@ def print_help():
         "where <столбец_условия> = <значение_условия> "
         "- обновить запись."
     )
-    print(
-        "delete from <имя_таблицы> where <столбец> = <значение> "
-        "- удалить запись."
-    )
+    print("delete from <имя_таблицы> where <столбец> = <значение> - удалить запись.")
     print("info <имя_таблицы> - вывести информацию о таблице.")
 
     print("\nОбщие команды:")
@@ -75,9 +68,7 @@ def show_rows(metadata, table_name, rows):
     table.field_names = list(metadata[table_name].keys())
 
     for row in rows:
-        table.add_row(
-            [row.get(column) for column in table.field_names]
-        )
+        table.add_row([row.get(column) for column in table.field_names])
 
     print(table)
 
@@ -85,9 +76,18 @@ def show_rows(metadata, table_name, rows):
 def run():
     """Запускает основной цикл работы базы данных."""
     print_help()
-    available_commands = ["help","exit", "create_table",
-                        "list_tables", "drop_table", "insert",
-                        "select", "update", "delete", "info"]
+    available_commands = [
+        "help",
+        "exit",
+        "create_table",
+        "list_tables",
+        "drop_table",
+        "insert",
+        "select",
+        "update",
+        "delete",
+        "info",
+    ]
     while True:
         user_command = prompt.string(prompt="Введите команду: ")
 
@@ -106,7 +106,7 @@ def run():
         command = args[0].lower()
 
         if command not in available_commands:
-            print(f'Функции {command} нет. Попробуйте снова.')
+            print(f"Функции {command} нет. Попробуйте снова.")
             continue
 
         if command == "help":

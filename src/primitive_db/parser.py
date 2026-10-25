@@ -11,16 +11,12 @@ def convert_value(value):
         return value
 
 
-
 def parse_insert(args):
     """Разбирает команду добавления записи."""
     table_name = args[2]
     values_string = " ".join(args[4:])
     values_string = values_string.strip("()")
-    values = [
-        convert_value(value)
-        for value in values_string.split(",")
-    ]
+    values = [convert_value(value) for value in values_string.split(",")]
     return table_name, values
 
 
@@ -42,7 +38,6 @@ def parse_select(args):
     return table_name, where_clause
 
 
-
 def parse_update(args):
     """Разбирает команду обновления записей."""
     table_name = args[1]
@@ -62,7 +57,6 @@ def parse_update(args):
     where_clause = {where_column: where_value}
 
     return table_name, set_clause, where_clause
-
 
 
 def parse_delete(args):
